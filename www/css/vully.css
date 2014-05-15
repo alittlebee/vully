@@ -151,8 +151,13 @@ section[id="home"] ul > li:before,
 }
 
 section.cave {
-  left: 10ex;
+	margin-top:-120px;
+	left: 50%;
+	background-color: rgba(0,0,0,0); 
 }
+.encart {width:55ex;}
+.encart-cadre { display:block; background-color: #522A42; padding:10px 0px 20px 40px; text-align:left; line-height: 1.2em; height:460px;}
+.encart-fleche img{ width:50px;}
 
 div.mapLabelDiv {
   color: #000;
