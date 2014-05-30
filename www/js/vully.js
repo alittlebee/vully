@@ -5,6 +5,7 @@
 var initialMapPosition = {
   'home' : {x:0.5189310839225135,y:0.3516568495720967,scale:0.003060881448394781,vx:.5},
   'vignerons' : { x:0.5195680934607014,y:0.35197732928646386,scale:0.00040715245527878086, vx:.5 },
+  'praz' : {x:0.5197158410934367,y:0.35191649362034216,scale:0.000022728589277987155},
 };
 
 // Returns an array with: full location hash, section name, section subpath.
@@ -46,19 +47,31 @@ jQuery( function($){
     
     section.addClass("selectedSection");
     previousSection.removeClass("selectedSection");
+    $(".hide_on").removeClass("hide");
+    $(".hide_on." + currentSectionName()).addClass("hide");
+    $(".only_on").removeClass("selectedSection");
+    $(".only_on." + currentSectionName()).addClass("selectedSection");
 
     // Find out where we should scroll the map.
     var l = initialMapPosition[currentSectionName()];
     var pos = section.attr('data-pos');
     if (pos) {
       eval('var parsedPos = [' + pos + ']');
+      
+      var zoom = section.attr('data-zoom');
+      if (zoom) {
+        zoom = parseFloat(zoom);
+      } else {
+        zoom = 0.00008962143587454;
+      }
       l = {
         x: parsedPos[0],
         y: parsedPos[1],
-        scale: 0.00008962143587454,
-        // Place the icon at 66% on the right, to leave
+        scale: zoom,
+        // Place the icon at 50% on the right, to leave
         // space for text on the left.
-        vx: .66
+        vx: .50,
+		vy: .90
       };
     }
 
@@ -87,23 +100,35 @@ jQuery( function($){
     }
   }
 
+  function caveTitle(id) {
+    return $('#' + id + ' header').html();
+  }
   // Generate map icons.
   $('section[data-pos]').each(function(index, elem) {
     var id = this.id;
     var pos = $(this).attr('data-pos');
     var textAnchor = $(this).attr('data-text-anchor') || "-.1,.5";
+    var hideOn = ' hide_on home ';
+    if ($(this).hasClass('praz')) {
+      hideOn += 'vignerons ';
+    }
     $('.mapContainer').append(
-      '<div id="' + id + 'Icon" class="mapIconDiv" '
+      '<div id="' + id + 'Icon" class="mapIconDiv' + hideOn + '" '
       + 'data-map-pos="' + pos + '" data-map-anchor=".5,.5">'
       + '<a href="#' + id + '"><img src="img/icon-cave.png" class="mapIcon"/></a>'
       + '</div>'
-      + '<div id="' + id + 'Label" class="mapLabelDiv" '
+      + '<div id="' + id + 'Label" class="mapLabelDiv' + hideOn + id + '" '
       + 'data-map-pos="' + pos + '" data-map-anchor="' + textAnchor + '">'
-      + '<a href="#' + id + '">' + $('#' + id + ' header').html() + '</a>'
+      + '<a href="#' + id + '">' + caveTitle(id) + '</a>'
       + '</div>'
       );
   });
 
+  var prazList = $('<ul/>');
+  $('#listePraz').append(prazList);
+  $('.praz').each(function(){
+    prazList.append('<a href="#' + this.id + '">' + caveTitle(this.id) + '</a><br/>');
+  });
   window.onhashchange = function() {
     selectSection();
     //ga('send', 'pageview', window.location.pathname + window.location.search + window.location.hash);
